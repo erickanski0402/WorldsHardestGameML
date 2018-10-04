@@ -43,7 +43,9 @@ function draw(){
         // image(img, 325, 10, img.width*2, img.height*2);
         img = document.createElement('img');
         img.src = 'http://pm1.narvii.com/6363/d22dd64c9b16e4fd3d9fc16a188ea2cafc7433b1_00.jpg';
-        document.body.appendChild(img)
+        // document.body.appendChild(img)
+        ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 300, 20);
     }
 
     //drawing the player
