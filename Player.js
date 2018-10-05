@@ -12,12 +12,12 @@ class Player{
     }
 
     movePlayerX(){
-        player.posX += player.posXC;
-        player.posXC = 0;
+        this.posX += this.posXC;
+        this.posXC = 0;
     }
 
     movePlayerY(){
-        player.posY += player.posYC
-        player.posYC = 0;
+        this.posY += this.posYC
+        this.posYC = 0;
     }
 }

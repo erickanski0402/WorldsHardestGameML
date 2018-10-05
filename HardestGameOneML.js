@@ -20,7 +20,7 @@ function setup(){
     dots.push(new Enemy([[325,325],[775, 325]], 325, 325, 0, [775,325]));
     dots.push(new Enemy([[775,375],[325, 375]], 775, 375, 0, [325,375]));
 
-    player = new Player(130, 0, 0, 200, 0, 0, true);
+    population = new Population(10);
 
     iteration = 0;
 }
@@ -38,51 +38,66 @@ function draw(){
         dots[i].enemyMovement();
     }
 
-    player.alive = checkForEnemyCollisions();
-    if(checkForWinCondition()){
-        // image(img, 325, 10, img.width*2, img.height*2);
-        img = document.createElement('img');
-        img.src = 'http://pm1.narvii.com/6363/d22dd64c9b16e4fd3d9fc16a188ea2cafc7433b1_00.jpg';
-        // document.body.appendChild(img)
-        ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 300, 20);
+    for(let i = 0; i < population.players.length; i++){
+      population.players[i].alive = checkForEnemyCollisions(population.players[i]);
     }
 
+    // if(checkForWinCondition()){
+    //     // image(img, 325, 10, img.width*2, img.height*2);
+    //     img = document.createElement('img');
+    //     img.src = 'http://pm1.narvii.com/6363/d22dd64c9b16e4fd3d9fc16a188ea2cafc7433b1_00.jpg';
+    //     // document.body.appendChild(img)
+    //     ctx = canvas.getContext('2d');
+    //     ctx.drawImage(img, 300, 20);
+    // }
+
     //drawing the player
-    if(player.alive){
-        player.prevX = player.posX;
-        player.prevY = player.posY;
+    for(let i = 0; i < population.players.length; i++){
+      if(population.players[i].alive){
+          population.players[i].prevX = population.players[i].posX;
+          population.players[i].prevY = population.players[i].posY;
 
-        if(keyState[38]){
-            //up arrow
-            player.posYC = -2;
-        }
-        if(keyState[40]){
-            //down arrow
-            player.posYC = 2;
-        }
-        if(keyState[37]){
-            //left arrow
-            player.posXC = -2;
-        }
-        if(keyState[39]){
-            //right arrow
-            player.posXC = 2;
-        }
+          let x = 0;
+          let y = 0;
 
-        if(checkForWallCollisions(player.posX + player.posXC, player.posY)){
-            player.movePlayerX();
-        }
-        if(checkForWallCollisions(player.posX, player.posY + player.posYC)){
-            player.movePlayerY();
-        }
-    }else{
-        player.posX = 130;
-        player.posY = 200;
+          if(iteration % 3 == 0){
+            x = getRandomInt(3);
+            y = getRandomInt(3);
+          }
+
+          if(x == 0){
+            population.players[i].posXC = 0;
+          }else if(x == 1){
+            population.players[i].posXC = -2;
+          }else if(x == 2){
+            population.players[i].posXC = 2;
+          }
+
+          if(y == 0){
+            population.players[i].posYC = 0;
+          }else if(y == 1){
+            population.players[i].posYC = -2;
+          }else if(y == 2){
+            population.players[i].posYC = 2;
+          }
+
+          if(checkForWallCollisions(population.players[i].posX + population.players[i].posXC, population.players[i].posY)){
+              population.players[i].movePlayerX();
+          }
+          if(checkForWallCollisions(population.players[i].posX, population.players[i].posY + population.players[i].posYC)){
+              population.players[i].movePlayerY();
+          }
+      }else{
+          population.players[i].posX = 130;
+          population.players[i].posY = 200;
+          population.players[i].alive = true;
+      }
     }
 
     rectMode("center");
-    drawPlayer();
+    for(let i = 0; i < population.players.length; i++){
+      drawPlayer(population.players[i]);
+    }
 }
 
 function drawStartGoalAreas(){
@@ -130,15 +145,17 @@ function drawEnemies(){
     }
 }
 
-function drawPlayer(){
-    rectMode(CENTER);
-    strokeWeight(5);
-    fill(255, 0, 0);
-    rect(player.posX, player.posY, 30, 30);
-    rectMode(CORNER);
+function drawPlayer(player){
+    if(player.alive){
+      rectMode(CENTER);
+      strokeWeight(5);
+      fill(255, 0, 0);
+      rect(player.posX, player.posY, 30, 30);
+      rectMode(CORNER);
+    }
 }
 
-function checkForEnemyCollisions(){
+function checkForEnemyCollisions(player){
     for(let i = 0; i < 4; i++){
         DeltaX = dots[i].posX - Math.max(player.posX, Math.min(dots[i].posX, player.posX - 30));
         DeltaY = dots[i].posY - Math.max(player.posY, Math.min(dots[i].posY, player.posY - 30));
@@ -150,7 +167,7 @@ function checkForEnemyCollisions(){
     return true;
 }
 
-function checkForWinCondition(){
+function checkForWinCondition(player){
     if(player.posX > 850){
         return true;
     }
@@ -195,4 +212,8 @@ function checkForWallCollisions(tempX, tempY){
     }
 
     return true;
+}
+
+function getRandomInt(max){
+  return Math.floor(Math.random() * Math.floor(max));
 }
