@@ -7,10 +7,14 @@ window.addEventListener('keyup',function(e){
 },true);
 
 var iteration;
+var img;
+
 let dots = [];
 let player;
 let enemyRadius = 20;
-var img;
+let popSize = 100;
+let x = 0;
+let y = 0;
 
 function setup(){
     createCanvas(1100, 500);
@@ -20,7 +24,7 @@ function setup(){
     dots.push(new Enemy([[325,325],[775, 325]], 325, 325, 0, [775,325]));
     dots.push(new Enemy([[775,375],[325, 375]], 775, 375, 0, [325,375]));
 
-    population = new Population(10);
+    population = new Population(popSize);
 
     iteration = 0;
 }
@@ -56,9 +60,6 @@ function draw(){
       if(population.players[i].alive){
           population.players[i].prevX = population.players[i].posX;
           population.players[i].prevY = population.players[i].posY;
-
-          let x = 0;
-          let y = 0;
 
           if(iteration % 3 == 0){
             x = getRandomInt(3);
