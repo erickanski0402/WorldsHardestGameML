@@ -12,11 +12,12 @@ var img;
 let dots = [];
 let player;
 let enemyRadius = 20;
-let popSize = 100;
-// let x = 0;
-// let y = 0;
+let popSize = 500;
 let rand = 0;
 let vector = [];
+let maxMoves = 5;
+let currentMove = 0;
+let generation = 0;
 
 function setup(){
     createCanvas(1100, 500);
@@ -40,6 +41,13 @@ function draw(){
     //counts the number of times draw is updated
     iteration++;
 
+    textSize(32);
+    fill(255,0,0);
+    text("Iteration number: " + iteration, 10, 50);
+    text("Current Move: " + currentMove, 500, 50);
+    text("Generation: " + (generation + 1), 10, 80);
+    text("Max Moves: " + maxMoves, 10, 110);
+
     for(let i = 0; i < 4; i++){
         dots[i].enemyMovement();
     }
@@ -57,40 +65,28 @@ function draw(){
     //     ctx.drawImage(img, 300, 20);
     // }
 
+    if(currentMove == maxMoves){
+      currentMove = 0;
+      generation++;
+      if(generation % 5 == 0){
+        maxMoves += 5;
+      }
+
+      for(let i = 0; i < population.players.length; i++){
+        population.players[i].fillMoveList(maxMoves);
+      }
+    }
+
     //drawing the player
     for(let i = 0; i < population.players.length; i++){
       if(population.players[i].alive){
           population.players[i].prevX = population.players[i].posX;
           population.players[i].prevY = population.players[i].posY;
 
-          if(iteration % 3 == 0){
-            rand = floor(random(9));
+          if(iteration % 10 == 0){
+            population.players[i].posXC = population.players[i].movesList[currentMove][0];
+            population.players[i].posYC = population.players[i].movesList[currentMove][1];
           }
-
-          vector = getMovementVector(rand);
-          population.players[i].posXC = vector[0];
-          population.players[i].posYC = vector[1];
-
-          // if(iteration % 3 == 0){
-          //   x = getRandomInt(3);
-          //   y = getRandomInt(3);
-          // }
-          //
-          // if(x == 0){
-          //   population.players[i].posXC = 0;
-          // }else if(x == 1){
-          //   population.players[i].posXC = -2;
-          // }else if(x == 2){
-          //   population.players[i].posXC = 2;
-          // }
-          //
-          // if(y == 0){
-          //   population.players[i].posYC = 0;
-          // }else if(y == 1){
-          //   population.players[i].posYC = -2;
-          // }else if(y == 2){
-          //   population.players[i].posYC = 2;
-          // }
 
           if(checkForWallCollisions(population.players[i].posX + population.players[i].posXC, population.players[i].posY)){
               population.players[i].movePlayerX();
@@ -99,10 +95,12 @@ function draw(){
               population.players[i].movePlayerY();
           }
       }else{
-          population.players[i].posX = 130;
-          population.players[i].posY = 200;
-          population.players[i].alive = true;
+          population.players[i].resetPlayer();
       }
+    }
+
+    if(iteration % 10 == 0){
+      currentMove++;
     }
 
     rectMode("center");
