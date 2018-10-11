@@ -13,8 +13,10 @@ let dots = [];
 let player;
 let enemyRadius = 20;
 let popSize = 100;
-let x = 0;
-let y = 0;
+// let x = 0;
+// let y = 0;
+let rand = 0;
+let vector = [];
 
 function setup(){
     createCanvas(1100, 500);
@@ -62,25 +64,33 @@ function draw(){
           population.players[i].prevY = population.players[i].posY;
 
           if(iteration % 3 == 0){
-            x = getRandomInt(3);
-            y = getRandomInt(3);
+            rand = floor(random(9));
           }
 
-          if(x == 0){
-            population.players[i].posXC = 0;
-          }else if(x == 1){
-            population.players[i].posXC = -2;
-          }else if(x == 2){
-            population.players[i].posXC = 2;
-          }
+          vector = getMovementVector(rand);
+          population.players[i].posXC = vector[0];
+          population.players[i].posYC = vector[1];
 
-          if(y == 0){
-            population.players[i].posYC = 0;
-          }else if(y == 1){
-            population.players[i].posYC = -2;
-          }else if(y == 2){
-            population.players[i].posYC = 2;
-          }
+          // if(iteration % 3 == 0){
+          //   x = getRandomInt(3);
+          //   y = getRandomInt(3);
+          // }
+          //
+          // if(x == 0){
+          //   population.players[i].posXC = 0;
+          // }else if(x == 1){
+          //   population.players[i].posXC = -2;
+          // }else if(x == 2){
+          //   population.players[i].posXC = 2;
+          // }
+          //
+          // if(y == 0){
+          //   population.players[i].posYC = 0;
+          // }else if(y == 1){
+          //   population.players[i].posYC = -2;
+          // }else if(y == 2){
+          //   population.players[i].posYC = 2;
+          // }
 
           if(checkForWallCollisions(population.players[i].posX + population.players[i].posXC, population.players[i].posY)){
               population.players[i].movePlayerX();
@@ -217,4 +227,18 @@ function checkForWallCollisions(tempX, tempY){
 
 function getRandomInt(max){
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getMovementVector(rand){
+  switch(rand){
+    case 0: return [0,0]
+    case 1: return [2,0]
+    case 2: return [2,-2]
+    case 3: return [2,2]
+    case 4: return [0,2]
+    case 5: return [-2,2]
+    case 6: return [-2,0]
+    case 7: return [0,-2]
+    case 8: return [-2,-2]
+  }
 }
