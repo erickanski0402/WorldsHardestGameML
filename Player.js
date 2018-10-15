@@ -27,7 +27,6 @@ class Player{
     }
 
     fillMoveList(numMoves){
-      this.resetPlayer();
       for(let i = 0; i < numMoves; i++){
         this.movesList[i] = getMovementVector(floor(random(9)));
       }
@@ -48,7 +47,6 @@ class Player{
     }
 
     resetPlayer(){
-      print("reset");
       this.movesList = [];
       this.alive = true;
       this.posX = 130;

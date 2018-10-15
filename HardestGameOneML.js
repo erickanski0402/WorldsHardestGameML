@@ -27,7 +27,7 @@ function setup(){
     dots.push(new Enemy([[325,325],[775, 325]], 325, 325, 0, [775,325]));
     dots.push(new Enemy([[775,375],[325, 375]], 775, 375, 0, [325,375]));
 
-    population = new Population(popSize);
+    population = new Population(popSize, maxMoves);
 
     iteration = 0;
 }
@@ -53,7 +53,9 @@ function draw(){
     }
 
     for(let i = 0; i < population.players.length; i++){
-      population.players[i].alive = checkForEnemyCollisions(population.players[i]);
+      if(population.players[i].alive){
+        population.players[i].alive = checkForEnemyCollisions(population.players[i]);
+      }
     }
 
     // if(checkForWinCondition()){
@@ -73,13 +75,14 @@ function draw(){
       }
 
       for(let i = 0; i < population.players.length; i++){
+        population.players[i].resetPlayer();
         population.players[i].fillMoveList(maxMoves);
       }
     }
 
     //drawing the player
     for(let i = 0; i < population.players.length; i++){
-      if(population.players[i].alive){
+      if(population.players[i].alive && population.players[i].movesList.length > 0){
           population.players[i].prevX = population.players[i].posX;
           population.players[i].prevY = population.players[i].posY;
 
@@ -94,8 +97,6 @@ function draw(){
           if(checkForWallCollisions(population.players[i].posX, population.players[i].posY + population.players[i].posYC)){
               population.players[i].movePlayerY();
           }
-      }else{
-          population.players[i].resetPlayer();
       }
     }
 
@@ -169,7 +170,7 @@ function checkForEnemyCollisions(player){
         DeltaX = dots[i].posX - Math.max(player.posX, Math.min(dots[i].posX, player.posX - 30));
         DeltaY = dots[i].posY - Math.max(player.posY, Math.min(dots[i].posY, player.posY - 30));
         if((DeltaX * DeltaX + DeltaY * DeltaY) < 600){
-            console.log("Player X pos: " + player.posX + " Player Y position: " + player.posY + " Enemy X pos:" + dots[i].posX + " Enemy Y pos: " + dots[i].posY)
+            //console.log("Player X pos: " + player.posX + " Player Y position: " + player.posY + " Enemy X pos:" + dots[i].posX + " Enemy Y pos: " + dots[i].posY)
             return false;
         }
     }
