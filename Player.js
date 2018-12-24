@@ -14,6 +14,9 @@ class Player{
 
         this.movesList = [];
         this.currentMove = 0;
+
+        this.currentGoal = 0;
+        this.fitness = 0;
     }
 
     movePlayerX(){
@@ -55,5 +58,7 @@ class Player{
       this.posY = 200;
       this.posYC = 0;
       this.prevY = 200;
+      this.currentGoal = 0
+      this.fitness = 0;
     }
 }
