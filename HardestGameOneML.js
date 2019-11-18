@@ -20,19 +20,24 @@ let currentMove = 0;
 let generation = 0;
 
 function setup(){
+    //Creates canvas by which everything may be drawn on
     createCanvas(1100, 500);
 
+    //Creates a new instance of enemy at these coordinates
     dots.push(new Enemy([[325,225],[775, 225]], 325, 225, 0, [775,225]));
     dots.push(new Enemy([[775,275],[325, 275]], 775, 275, 0, [325,275]));
     dots.push(new Enemy([[325,325],[775, 325]], 325, 325, 0, [775,325]));
     dots.push(new Enemy([[775,375],[325, 375]], 775, 375, 0, [325,375]));
 
+    //Creates a new population of a specified size and initial max moves
     population = new Population(popSize, maxMoves);
 
+    //Instantiates the iteration of draws
     iteration = 0;
 }
 
 function draw(){
+    //Draws everything about the map
     background(100, 140, 200);
     drawStartGoalAreas();
     drawDangerAreas();
@@ -41,6 +46,7 @@ function draw(){
     //counts the number of times draw is updated
     iteration++;
 
+    //Debug information
     textSize(32);
     fill(255,0,0);
     text("Iteration number: " + iteration, 10, 50);
@@ -48,13 +54,16 @@ function draw(){
     text("Generation: " + (generation + 1), 10, 80);
     text("Max Moves: " + maxMoves, 10, 110);
 
+    //Moves the position of the enemies per the iteration
     for(let i = 0; i < 4; i++){
         dots[i].enemyMovement();
     }
 
+    //For every player still living, checks to see if they have collided with an enemy or whether they have hit a goal
     for(let i = 0; i < population.players.length; i++){
       if(population.players[i].alive){
         population.players[i].alive = checkForEnemyCollisions(population.players[i]);
+        checkGoal(population.players[i]);
       }
     }
 
@@ -67,13 +76,17 @@ function draw(){
     //     ctx.drawImage(img, 300, 20);
     // }
 
+    //If the population has exhausted its movelist then a new generation is spawned
     if(currentMove == maxMoves){
       currentMove = 0;
       generation++;
+
+      //Every five generations the number of moves per generation is increased
       if(generation % 5 == 0){
         maxMoves += 5;
       }
 
+      //At the end of each generation the players are reset and the move lists filled
       for(let i = 0; i < population.players.length; i++){
         population.players[i].resetPlayer();
         population.players[i].fillMoveList(maxMoves);
@@ -83,27 +96,33 @@ function draw(){
     //drawing the player
     for(let i = 0; i < population.players.length; i++){
       if(population.players[i].alive && population.players[i].movesList.length > 0){
-          population.players[i].prevX = population.players[i].posX;
-          population.players[i].prevY = population.players[i].posY;
+          //Unused(?)
+          // population.players[i].prevX = population.players[i].posX;
+          // population.players[i].prevY = population.players[i].posY;
 
+          //Every 10th draw the players move on to the next move in the list of moves
           if(iteration % 10 == 0){
             population.players[i].posXC = population.players[i].movesList[currentMove][0];
             population.players[i].posYC = population.players[i].movesList[currentMove][1];
           }
 
+          //Checks to make sure they havent collided with a wall in the X-axis
           if(checkForWallCollisions(population.players[i].posX + population.players[i].posXC, population.players[i].posY)){
               population.players[i].movePlayerX();
           }
+          //Checks to make sure the player hasnt collided with a wall in the Y-axis
           if(checkForWallCollisions(population.players[i].posX, population.players[i].posY + population.players[i].posYC)){
               population.players[i].movePlayerY();
           }
       }
     }
 
+    //Every 10h draw the current move shifts to the next in the list
     if(iteration % 10 == 0){
       currentMove++;
     }
 
+    //Draws each of the players in the population
     rectMode("center");
     for(let i = 0; i < population.players.length; i++){
       drawPlayer(population.players[i]);
@@ -150,12 +169,14 @@ function drawEnemies(){
     fill(0, 0, 255);
     strokeWeight(2);
 
+    // Draws each of the enemies in the list
     for(let i = 0; i < 4; i++){
         ellipse(dots[i].posX, dots[i].posY, enemyRadius, enemyRadius);
     }
 }
 
 function drawPlayer(player){
+    //Draws the player at their safe location
     if(player.alive){
       rectMode(CENTER);
       strokeWeight(5);
@@ -166,6 +187,8 @@ function drawPlayer(player){
 }
 
 function checkForEnemyCollisions(player){
+    //If a move would cause the player to collide with an enemy the function returns false
+    //Indicating they are dead
     for(let i = 0; i < 4; i++){
         DeltaX = dots[i].posX - Math.max(player.posX, Math.min(dots[i].posX, player.posX - 30));
         DeltaY = dots[i].posY - Math.max(player.posY, Math.min(dots[i].posY, player.posY - 30));
@@ -174,10 +197,12 @@ function checkForEnemyCollisions(player){
             return false;
         }
     }
+    //Otherwise it returns true indicating they are still living
     return true;
 }
 
 function checkForWinCondition(player){
+  //Not used at the moment
     if(player.posX > 850){
         return true;
     }
@@ -186,6 +211,7 @@ function checkForWinCondition(player){
 }
 
 function checkForWallCollisions(tempX, tempY){
+  //Wall collision logic....
     //console.log("X: " + tempX + "   Y: " + tempY);
     if(tempX < 65 || tempX > 1035){
         //player.posX = player.prevX;
@@ -225,10 +251,13 @@ function checkForWallCollisions(tempX, tempY){
 }
 
 function getRandomInt(max){
+  //Random number generator
   return Math.floor(Math.random() * Math.floor(max));
 }
 
 function getMovementVector(rand){
+  //Given a random value between 0 and 8 (inclusive)
+  //A certain movement vector is returned
   switch(rand){
     case 0: return [0,0]
     case 1: return [2,0]
@@ -239,5 +268,29 @@ function getMovementVector(rand){
     case 6: return [-2,0]
     case 7: return [0,-2]
     case 8: return [-2,-2]
+  }
+}
+
+function checkGoal(player){
+  //Checks a given players coordinates to see whether or not their location is within one of the short term goals
+  //If it is then the current goal moves to the next
+  switch(player.currentGoal){
+    case 0:
+      if((player.posX > 250 && player.posX < 300) && (player.posY > 400 && player.posY < 450)){
+        console.log("Player has reached first goal");
+        player.currentGoal += 1;
+      }
+      break;
+    case 1:
+      if((player.posX > 300 && player.posX < 350) && (player.posY > 400 && player.posY < 450)){
+        console.log("Player has reached second goal");
+        player.currentGoal += 1;
+      }
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    default: return -1;
   }
 }
