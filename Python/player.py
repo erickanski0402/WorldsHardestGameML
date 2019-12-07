@@ -1,4 +1,5 @@
 import pyglet
+from math import pi, sin, cos, sqrt, pow
 from game_area import will_collide
 
 class Player:
@@ -9,7 +10,7 @@ class Player:
 
     def draw(self):
         # Square is drown from the bottom left corner
-        print(f"Drawing player status:{self.alive} at position: ({self.pos_x}, {self.pos_y})")
+        # print(f"Drawing player status:{self.alive} at position: ({self.pos_x}, {self.pos_y})")
         if not self.alive:
             self.pos_x = self.initial_x
             self.pos_y = self.initial_y
@@ -42,3 +43,60 @@ class Player:
             True
         )
         self.draw()
+
+    def check_collisions(self, enemy):
+        player_left_x = self.pos_x
+        player_right_x = self.pos_x + self.width
+        player_top_y = self.pos_y + self.width
+        player_bottom_y = self.pos_y
+
+        if ((enemy.pos_x < player_left_x) and (enemy.pos_y > player_top_y)
+        and sqrt(pow(enemy.pos_x - player_left_x, 2) + pow(enemy.pos_y - player_top_y, 2)) < enemy.radius):
+            # Top Left quadrant
+            print("Top left collision")
+            return True
+
+        # left center quadrant
+        if ((enemy.pos_x < player_left_x) and (enemy.pos_y < player_top_y)
+        and (enemy.pos_y > player_bottom_y) and (player_left_x - enemy.pos_x) < enemy.radius):
+            # Left Center quadrant
+            print("Center left collision")
+            return True
+
+        if ((enemy.pos_x < player_left_x) and (enemy.pos_y < player_bottom_y)
+        and sqrt(pow(enemy.pos_x - player_left_x,2) + pow(enemy.pos_y - player_bottom_y,2)) < enemy.radius):
+            print("Bottom left collision")
+            # Bottom Left quadrant
+            return True
+
+        if ((enemy.pos_x < player_right_x) and (enemy.pos_y > player_top_y)
+        and sqrt(pow(enemy.pos_x - player_right_x, 2) + pow(enemy.pos_y - player_top_y, 2)) < enemy.radius):
+            # Top Right quadrant
+            print("Top right collision")
+            return True
+
+        # right center quadrant
+        if ((enemy.pos_x < player_right_x) and (enemy.pos_y < player_top_y)
+        and (enemy.pos_y > player_bottom_y) and (player_right_x - enemy.pos_x) < enemy.radius):
+            # Right Center quadrant
+            print("Center right collision")
+            return True
+
+        if ((enemy.pos_x < player_left_x) and (enemy.pos_y < player_bottom_y)
+        and sqrt(pow(enemy.pos_x - player_right_x,2) + pow(enemy.pos_y - player_bottom_y,2)) < enemy.radius):
+            print("Bottom right collision")
+            # Bottom Right quadrant
+            return True
+
+        if ((enemy.pos_x > player_left_x and enemy.pos_x < player_right_x)
+        and sqrt(pow(enemy.pos_y - player_top_y, 2)) < enemy.radius):
+            print("Top center collision")
+            # Top Center quadrant
+            return True
+
+        if ((enemy.pos_x > player_left_x and enemy.pos_x < player_right_x)
+        and sqrt(pow(enemy.pos_y - player_bottom_y, 2)) < enemy.radius):
+            print("Bottom center collision")
+            # Top Center quadrant
+            return True
+        return False

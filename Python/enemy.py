@@ -26,7 +26,7 @@ class Enemy:
         self.vel_x = vel_x
         self.vel_y = vel_y
         self.radius = radius
-        self.colliding = colliding
+        # self.colliding = colliding
 
     def move(self, player):
         # print(f"Current position {self.pos_x}")
@@ -39,7 +39,8 @@ class Enemy:
             self.vel_x,
             self.vel_y,
             self.radius,
-            self.check_collisions(player)
+            False
+            # self.check_collisions(player)
         )
         self.draw()
 
